@@ -6,13 +6,21 @@ import pprint
 URLlist = ['http://www.google.com', 'https://www.reddit.com']
 
 def MakeConnection(URL, URLlist):
+    # The user-agent basically lets the website know who you are
     myHeader = {'User-Agent': 'python-requests/2.18.4 (Compatible; Grorco; mailto:Grorco.linux@gmail.com)'}
+    # Tell the website who you are, and request the content of the page you have sent them
     response = requests.get(URL, headers=myHeader)
+    # If you are allowed and there are no problems, you should get a response code of 200
+    # An example of a fail would be a 404 error
     if response.status_code != 200:
+        # Check how far you hav iterated through the list, and give an appropriate error
         if URLlist.index(URL) == len(URLlist):
-            print('{} has rejected your request, trying {} next'.format(URL, URLlist[URLlist.index(URL)+1]))
+            print('{} has rejected your request with a {} error,'
+                  ' trying {} next'.format(URL, response.status_code, URLlist[URLlist.index(URL)+1]))
         else:
-            print('{} has rejected your request, there are no more URLs to try'.format(URL))
+            print('{} has rejected your request with a {} error,'
+                  ' there are no more URLs to try'.format(URL, response.status_code))
+        # If you got a bad response change it to a None type so we can check it for Truth
         response = None
     return response
 
@@ -61,15 +69,26 @@ def SiteDictMaker(URLlist):
 
 def GetLinks():
     URLlist = ['http://www.ncaa.com', 'https://www.pbs.com', 'http://www.google.com/1234']
+    # For every URL in your list
     for URL in URLlist:
+        # Try to make a connection and get a response
         response = MakeConnection(URL, URLlist)
+        # If the response holds information, is not None/False
         if response:
+            # Use Beautiful Soup to organise the information in a more useful manner
             soup = bs(response.content, "html.parser")
+            # In html <a href=somelink.com>My Link</a> signifies a link, find all looks for the word inside the trailing
+            # </> so for a link we want to itterate over the list returned from find_all('a')
             for a in soup.find_all('a'):
+                # Not every link is to a url, so you need to catch an error if it doesn't contain a 'href'
                 try:
+                    # if a has a 'href'(Hypertext REFerence) that points to http, or https
                     if a.get('href').startswith('https://') or a.get('href').startswith('http://'):
+                        # Print the text that holds the link
                         print(a.text)
+                        # Print the URL it points too
                         print(a.get('href'))
+                # This could happen if it was <a download=somefilelocation>My file</a> or something along those lines
                 except AttributeError:
                     pass
 # Runs everything
