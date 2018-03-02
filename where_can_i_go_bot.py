@@ -1,16 +1,19 @@
 import requests
-import sys
+from bs4 import BeautifulSoup as bs
 import pprint
 
 # A list of URLs you want to get the robots.txt from
 URLlist = ['http://www.google.com', 'https://www.reddit.com']
 
-def MakeConnection(URL):
+def MakeConnection(URL, URLlist):
     myHeader = {'User-Agent': 'python-requests/2.18.4 (Compatible; Grorco; mailto:Grorco.linux@gmail.com)'}
     response = requests.get(URL, headers=myHeader)
     if response.status_code != 200:
-        print('Rejected')
-        sys.exit()
+        if URLlist.index(URL) == len(URLlist):
+            print('{} has rejected your request, trying {} next'.format(URL, URLlist[URLlist.index(URL)+1]))
+        else:
+            print('{} has rejected your request, there are no more URLs to try'.format(URL))
+        response = None
     return response
 
 def GetAllowed(response):
@@ -40,22 +43,42 @@ def GetAllowed(response):
     return allowedlist, disallowedlist
 
 
-def sitedictmaker(URLlist):
+def SiteDictMaker(URLlist):
     # Create a dictionary to store your info in
     sitedict = {}
     # For each site in your URL list
     for site in URLlist:
         # Request the robots.txt file
-        response = MakeConnection(URLlist[0] + '/robots.txt')
-        # sort the file into an allowed and disallowed list
-        allowedlist, disallowedlist = GetAllowed(response)
-        # store it all in a dictionary
-        sitedict.update({site: {'allowed': allowedlist, 'disallowed': disallowedlist}})
+        response = MakeConnection(URLlist[0] + '/robots.txt', URLlist)
+        # Check for None type
+        if response:
+            # sort the file into an allowed and disallowed list
+            allowedlist, disallowedlist = GetAllowed(response)
+            # store it all in a dictionary
+            sitedict.update({site: {'allowed': allowedlist, 'disallowed': disallowedlist}})
     return sitedict
 
-# Runs everything
-sitedict = sitedictmaker(URLlist)
 
+def GetLinks():
+    URLlist = ['http://www.ncaa.com', 'https://www.pbs.com', 'http://www.google.com/1234']
+    for URL in URLlist:
+        response = MakeConnection(URL, URLlist)
+        if response:
+            soup = bs(response.content, "html.parser")
+            for a in soup.find_all('a'):
+                try:
+                    if a.get('href').startswith('https://') or a.get('href').startswith('http://'):
+                        print(a.text)
+                        print(a.get('href'))
+                except AttributeError:
+                    pass
+# Runs everything
+sitedict = SiteDictMaker(URLlist)
 # pretty print out the results
 pprint.pprint(sitedict)
+# Grabs some links from sites
+GetLinks()
+
+
+
 
