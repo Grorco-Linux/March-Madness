@@ -41,13 +41,13 @@ def nbc(URLdict, newsdict, name):
                     # if the text(headline) isn't in the dictionary add it and print
                     if cleantext not in newsdict[name].keys():
                                                             # added a time stamp
-                        newsdict[name].update({cleantext: [time.time(), URLlist[name] + a.get('href')]})
-                        print(cleantext, '\n', URLlist[name]+a.get('href'))
+                        newsdict[name].update({cleantext: [time.time(), URLdict[name] + a.get('href')]})
+                        print(cleantext, '\n', URLdict[name]+a.get('href'))
                 # if the link is already a full URL do the same thing
-                elif a.get('href').startswith(URLlist[name]):
+                elif a.get('href').startswith(URLdict[name]):
                     if cleantext not in newsdict[name].keys():
                         newsdict[name].update({cleantext: [time.time(),a.get('href')]})
-                        print(cleantext, '\n', URLlist[name] + a.get('href'))
+                        print(cleantext, '\n', URLdict[name] + a.get('href'))
             except AttributeError:
                 pass
         # check for updates every x seconds
@@ -62,7 +62,7 @@ if __name__ == '__main__':
 
     # if you already have a dictionary try to open it first
     #-------------------------------------------more JSON---------------------------------------------------------------
-    # json.load to read in
+    # json.load to read
     try:
         with open('news', 'r') as f:
             newsdict = json.load(f)
