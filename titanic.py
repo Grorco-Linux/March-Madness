@@ -54,7 +54,7 @@ class Titanic:
                                              templist[2][i+2], templist[2][i+3], templist[2][i+4]))
 
     def find_survivors(self, group):
-        """Takes a list of passangers and returns a list of the survivors from it"""
+        """Takes a list of passengers and returns a list of the survivors from it"""
         survivors = []
         for person in group:
             if person.survived:
@@ -62,7 +62,7 @@ class Titanic:
         return survivors
 
     def find_sex(self, group):
-        """Takes a list of passangers and returns a dictionary containing list of the survivors by sex"""
+        """Takes a list of passengers and returns a dictionary containing list of the survivors by sex"""
         sex = {'Males': [], 'Females': [], 'Unknown': []}
 
         for person in group:
@@ -107,7 +107,7 @@ class passenger:
         return firstname, 'Unknown'
 
 
-# create an instance of titance
+# create an instance of titanic
 bigboat = Titanic()
 
 URL = ['http://www.titanicfacts.net']
