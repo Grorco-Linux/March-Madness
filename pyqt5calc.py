@@ -21,7 +21,6 @@ class CalcWindow(QtWidgets.QWidget):
         for i in range(1, 10):
             if (i-1)%3 == 0:
                 row += 1
-                print(row)
             self.numbuttons.append(QtWidgets.QPushButton(str(i)))
             self.grid.addWidget(self.numbuttons[i], row, (i-1)%3)
 
@@ -64,10 +63,15 @@ class CalcWindow(QtWidgets.QWidget):
             button.clicked.connect(lambda _, button= button: self.whichbutton(button))
 
     def whichbutton(self, button):
+        if button.text() == 'C':
+            self.output.setText('0')
+            self.operator = 'none'
+            self.numlist['base'] = 0
         try:
             error = float(self.output.text())
         except ValueError:
             self.output.setText('Must be integer or float')
+            return
         if button.text().isdigit() or button.text() == '.':
             if self.firstnumafteroperator:
                 self.output.setText('0')
@@ -81,16 +85,13 @@ class CalcWindow(QtWidgets.QWidget):
                 if button.text() == '.':
                     if not self.output.text().__contains__('.'):
                         self.output.setText(str(self.output.text()+button.text()))
-                if self.output.text().startswith('0') and not self.output.text().startswith('0.'):
+                elif self.output.text().startswith('0') and not self.output.text().startswith('0.'):
                     print('here')
                     self.output.setText(button.text())
                 else:
                     self.output.setText(str(self.output.text()+button.text()))
 
-        elif button.text() == 'C':
-            self.output.setText('0')
-            self.operator = 'none'
-            self.numlist['base'] = 0
+
 
         elif button.text() == '+':
             if self.operator == '+':
@@ -131,7 +132,7 @@ class CalcWindow(QtWidgets.QWidget):
             if self.operator == '/':
                 self.div()
 
-            #self.operator = 'none'
+            self.operator = 'none'
 
         elif button.text() == '+/-':
             if self.output.text().startswith('-'):
