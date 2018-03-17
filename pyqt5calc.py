@@ -64,6 +64,10 @@ class CalcWindow(QtWidgets.QWidget):
             button.clicked.connect(lambda _, button= button: self.whichbutton(button))
 
     def whichbutton(self, button):
+        try:
+            error = float(self.output.text())
+        except ValueError:
+            self.output.setText('Must be integer or float')
         if button.text().isdigit() or button.text() == '.':
             if self.firstnumafteroperator:
                 self.output.setText('0')
@@ -197,4 +201,3 @@ app = QtWidgets.QApplication(sys.argv)
 mainwindow = CalcWindow()
 app.exit(app.exec_())
 
-#functools.partial: button.clicked.connect(functools.partial(self.whichbutton, button))
